@@ -16,6 +16,7 @@ import {
   ChevronUp,
   Brain,
   HelpCircle,
+  Target,
 } from "lucide-react"
 import { useState } from "react"
 import {
@@ -30,6 +31,7 @@ import {
   Cell,
 } from "recharts"
 import Link from "next/link"
+import { Badge } from "@/components/ui/badge"
 
 const pisaData = {
   indonesia: {
@@ -151,6 +153,148 @@ const tooltips = {
     "Students achieving at least Level 2 proficiency - the baseline level needed for full participation in modern society.",
   betweenSchoolVariance:
     "The percentage of performance variation that occurs between schools rather than within schools.",
+}
+
+// Add these functions before the main return statement
+
+const getCountryStrengths = (countryId: string) => {
+  if (countryId === "indonesia") {
+    return [
+      {
+        icon: Users,
+        title: "High Student Resilience",
+        description:
+          "12.3% of disadvantaged students perform in the top quarter academically, showing strong individual determination despite challenges.",
+        metric: "12.3% resilient students",
+        context: "Above many middle-income countries",
+      },
+      {
+        icon: TrendingUp,
+        title: "Improving Reading Performance",
+        description:
+          "Reading scores have improved by 12 points since 2018, indicating effective literacy interventions are taking hold.",
+        metric: "+12.1 point trend",
+        context: "Positive trajectory",
+      },
+      {
+        icon: School,
+        title: "Relatively Equitable System",
+        description:
+          "Only 8.9% of performance variation is explained by socio-economic background, suggesting fair access to quality education.",
+        metric: "8.9% ESCS impact",
+        context: "Lower than OECD average",
+      },
+      {
+        icon: BookOpen,
+        title: "Strong Student Motivation",
+        description:
+          "74% of students report high motivation to learn, providing a solid foundation for educational improvements.",
+        metric: "74.2% motivated students",
+        context: "Strong learning mindset",
+      },
+    ]
+  } else if (countryId === "singapore") {
+    return [
+      {
+        icon: TrendingUp,
+        title: "Exceptional Learning Outcomes",
+        description:
+          "Over 90% of students achieve foundational proficiency across all subjects, among the world's highest rates.",
+        metric: "91%+ Level 2+ proficiency",
+        context: "Global top performer",
+      },
+      {
+        icon: Users,
+        title: "High Proportion of Resilient Students",
+        description:
+          "25.8% of disadvantaged students overcome their background to achieve high performance, showing system support works.",
+        metric: "25.8% resilient students",
+        context: "More than double OECD average",
+      },
+      {
+        icon: School,
+        title: "Excellent Learning Environment",
+        description: "Strong teacher support (79%) and student belonging (81%) create optimal conditions for learning.",
+        metric: "80%+ environment indicators",
+        context: "World-class learning conditions",
+      },
+      {
+        icon: BookOpen,
+        title: "High Digital Integration",
+        description: "73% of students effectively use ICT for learning, preparing them for the digital economy.",
+        metric: "72.8% ICT use",
+        context: "Leading digital education",
+      },
+    ]
+  }
+  return []
+}
+
+const getCountryImprovementAreas = (countryId: string) => {
+  if (countryId === "indonesia") {
+    return [
+      {
+        icon: BookOpen,
+        title: "Foundational Learning Gaps",
+        description:
+          "Only 30% of students reach basic proficiency levels, requiring intensive focus on core literacy and numeracy skills.",
+        metric: "30% Level 2+ average",
+        context: "Priority intervention needed",
+      },
+      {
+        icon: School,
+        title: "Teacher Support Systems",
+        description:
+          "68% teacher support access suggests need for stronger professional development and classroom assistance programs.",
+        metric: "67.8% teacher support",
+        context: "Below optimal levels",
+      },
+      {
+        icon: Users,
+        title: "Digital Learning Integration",
+        description:
+          "45% ICT use indicates significant opportunity to leverage technology for improved learning outcomes.",
+        metric: "45.2% ICT use",
+        context: "Digital divide challenge",
+      },
+    ]
+  } else if (countryId === "singapore") {
+    return [
+      {
+        icon: Users,
+        title: "Socio-Economic Equity",
+        description:
+          "12.5% of performance variation linked to family background suggests need for targeted support for disadvantaged students.",
+        metric: "12.5% ESCS impact",
+        context: "Equity opportunity",
+      },
+      {
+        icon: TrendingDown,
+        title: "Performance Trend Monitoring",
+        description: "Slight declines in recent PISA cycles warrant attention to maintain world-leading standards.",
+        metric: "-3.1 math trend",
+        context: "Maintain excellence",
+      },
+      {
+        icon: School,
+        title: "Between-School Variation",
+        description:
+          "22% between-school variance suggests opportunities to ensure more consistent quality across all schools.",
+        metric: "22.1% school variation",
+        context: "System consistency",
+      },
+    ]
+  }
+  return []
+}
+
+const getSystemNarrative = (countryId: string) => {
+  if (countryId === "indonesia") {
+    return "Indonesia's education system demonstrates remarkable resilience and equity, with students showing strong motivation and the system providing relatively fair opportunities regardless of family background. While foundational learning outcomes require intensive focus, the positive trends in reading and the high proportion of resilient students indicate that targeted interventions can be highly effective. The system's strength lies in its equity and student determination—building on these assets while addressing learning gaps could yield transformational results."
+  } else if (countryId === "singapore") {
+    return "Singapore has built one of the world's most effective education systems, achieving exceptional learning outcomes while maintaining strong learning environments. The system excels at developing resilient students and integrating technology effectively. The key opportunity lies in ensuring that excellence is paired with equity—leveraging the system's proven ability to support high achievement to close remaining gaps for disadvantaged students and maintain consistent quality across all schools."
+  }
+  return ""
 }
 
 export default function CountryDashboard({ params }: CountryDashboardProps) {
@@ -295,6 +439,94 @@ export default function CountryDashboard({ params }: CountryDashboardProps) {
                   {showOECDComparison ? "Hide" : "Show"} OECD Comparison
                 </Button>
               </div>
+            </div>
+
+            {/* Country Profile - Strengths & Areas for Improvement */}
+            <div className="mb-12">
+              <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-blue-50/50 shadow-lg">
+                <CardHeader className="pb-6">
+                  <CardTitle className="text-3xl font-bold text-foreground mb-2">
+                    {country.name} Education System Profile
+                  </CardTitle>
+                  <CardDescription className="text-lg text-muted-foreground">
+                    Key strengths to build upon and priority areas for targeted improvement
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="p-8">
+                  <div className="grid lg:grid-cols-2 gap-10">
+                    {/* Strengths Section */}
+                    <div>
+                      <h3 className="text-2xl font-bold text-emerald-800 mb-6 flex items-center gap-3">
+                        <TrendingUp className="h-6 w-6" />🌟 Key Strengths
+                      </h3>
+                      <div className="space-y-4">
+                        {getCountryStrengths(selectedCountry).map((strength, index) => (
+                          <Card key={index} className="border-emerald-200 bg-emerald-50/50">
+                            <CardContent className="p-5">
+                              <div className="flex items-start gap-4">
+                                <div className="bg-emerald-100 rounded-full p-2 flex-shrink-0">
+                                  <strength.icon className="h-5 w-5 text-emerald-700" />
+                                </div>
+                                <div className="flex-1">
+                                  <h4 className="font-semibold text-emerald-900 mb-2">{strength.title}</h4>
+                                  <p className="text-sm text-emerald-800 leading-relaxed mb-3">
+                                    {strength.description}
+                                  </p>
+                                  <div className="flex items-center gap-2">
+                                    <Badge className="bg-emerald-100 text-emerald-800 border-emerald-300">
+                                      {strength.metric}
+                                    </Badge>
+                                    <span className="text-xs text-emerald-700">{strength.context}</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Areas for Improvement Section */}
+                    <div>
+                      <h3 className="text-2xl font-bold text-amber-800 mb-6 flex items-center gap-3">
+                        <Target className="h-6 w-6" />🎯 Priority Areas for Improvement
+                      </h3>
+                      <div className="space-y-4">
+                        {getCountryImprovementAreas(selectedCountry).map((area, index) => (
+                          <Card key={index} className="border-amber-200 bg-amber-50/50">
+                            <CardContent className="p-5">
+                              <div className="flex items-start gap-4">
+                                <div className="bg-amber-100 rounded-full p-2 flex-shrink-0">
+                                  <area.icon className="h-5 w-5 text-amber-700" />
+                                </div>
+                                <div className="flex-1">
+                                  <h4 className="font-semibold text-amber-900 mb-2">{area.title}</h4>
+                                  <p className="text-sm text-amber-800 leading-relaxed mb-3">{area.description}</p>
+                                  <div className="flex items-center gap-2">
+                                    <Badge className="bg-amber-100 text-amber-800 border-amber-300">
+                                      {area.metric}
+                                    </Badge>
+                                    <span className="text-xs text-amber-700">{area.context}</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* System Narrative */}
+                  <div className="mt-10 p-6 bg-white rounded-xl border border-blue-200">
+                    <h4 className="text-xl font-bold text-blue-900 mb-4 flex items-center gap-2">
+                      <BookOpen className="h-5 w-5" />
+                      System Story
+                    </h4>
+                    <p className="text-blue-800 leading-relaxed text-lg">{getSystemNarrative(selectedCountry)}</p>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
 
             {/* Section 1: Learning Outcomes */}
