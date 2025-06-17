@@ -5,100 +5,105 @@ import { ArrowRight } from "lucide-react"
 
 const countries = [
   {
-    id: "kenya",
-    name: "Kenya",
-    flag: "🇰🇪",
-    score: 44,
-    status: "Needs Attention",
-    population: "54.0M",
-    lastUpdate: "Dec 2024",
-  },
-  {
     id: "indonesia",
     name: "Indonesia",
     flag: "🇮🇩",
-    score: 62,
-    status: "Improving",
+    score: 366,
+    status: "Below OECD Average",
     population: "273.5M",
-    lastUpdate: "Dec 2024",
+    lastUpdate: "PISA 2022",
   },
   {
-    id: "peru",
-    name: "Peru",
-    flag: "🇵🇪",
-    score: 58,
-    status: "Moderate",
-    population: "33.0M",
-    lastUpdate: "Nov 2024",
+    id: "singapore",
+    name: "Singapore",
+    flag: "🇸🇬",
+    score: 575,
+    status: "Top Performer",
+    population: "5.9M",
+    lastUpdate: "PISA 2022",
+  },
+  {
+    id: "chile",
+    name: "Chile",
+    flag: "🇨🇱",
+    score: 412,
+    status: "Near OECD Average",
+    population: "19.1M",
+    lastUpdate: "PISA 2022",
   },
   {
     id: "finland",
     name: "Finland",
     flag: "🇫🇮",
-    score: 89,
-    status: "Excellent",
+    score: 484,
+    status: "Above OECD Average",
     population: "5.5M",
-    lastUpdate: "Dec 2024",
+    lastUpdate: "PISA 2022",
   },
 ]
 
 export default function DashboardPage() {
   const getScoreColor = (score: number) => {
-    if (score >= 70) return "text-green-600"
-    if (score >= 50) return "text-yellow-600"
+    if (score >= 500) return "text-emerald-600"
+    if (score >= 450) return "text-amber-600"
     return "text-red-600"
   }
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "Excellent":
-        return "bg-green-100 text-green-800"
-      case "Improving":
-        return "bg-blue-100 text-blue-800"
-      case "Moderate":
-        return "bg-yellow-100 text-yellow-800"
-      case "Needs Attention":
-        return "bg-red-100 text-red-800"
+      case "Below OECD Average":
+        return "bg-red-50 text-red-700 border-red-200"
+      case "Near OECD Average":
+        return "bg-amber-50 text-amber-700 border-amber-200"
+      case "Above OECD Average":
+        return "bg-blue-50 text-blue-700 border-blue-200"
+      case "Top Performer":
+        return "bg-emerald-50 text-emerald-700 border-emerald-200"
       default:
-        return "bg-gray-100 text-gray-800"
+        return "bg-gray-50 text-gray-700 border-gray-200"
     }
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white">
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-blue-900 mb-4">Country Dashboards</h1>
-            <p className="text-lg text-blue-700">Select a country to view detailed education system analysis</p>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50/50 via-white to-indigo-50/30">
+      <div className="container mx-auto px-6 py-12">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <h1 className="text-4xl lg:text-5xl font-bold text-foreground mb-6">PISA Country Scorecards</h1>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+              Select a country to view detailed PISA performance analysis and insights
+            </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {countries.map((country) => (
-              <Card key={country.id} className="border-blue-200 hover:shadow-lg transition-shadow">
-                <CardHeader className="text-center">
-                  <div className="text-4xl mb-2">{country.flag}</div>
-                  <CardTitle className="text-blue-900">{country.name}</CardTitle>
-                  <CardDescription>
+              <Card
+                key={country.id}
+                className="group hover:shadow-xl transition-all duration-300 border-border/50 hover:border-primary/20"
+              >
+                <CardHeader className="text-center pb-4">
+                  <div className="text-5xl mb-4 group-hover:scale-110 transition-transform">{country.flag}</div>
+                  <CardTitle className="text-foreground text-xl mb-2">{country.name}</CardTitle>
+                  <CardDescription className="text-muted-foreground">
                     {country.population} • {country.lastUpdate}
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="text-center space-y-4">
-                  <div>
-                    <div className={`text-3xl font-bold ${getScoreColor(country.score)}`}>{country.score}/100</div>
-                    <p className="text-sm text-blue-600">Education Index</p>
+                <CardContent className="text-center space-y-6 pt-4">
+                  <div className="space-y-2">
+                    <div className={`text-4xl font-bold ${getScoreColor(country.score)}`}>{country.score}</div>
+                    <p className="text-sm text-muted-foreground font-medium">Math Score (PISA 2022)</p>
                   </div>
 
                   <div
-                    className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(country.status)}`}
+                    className={`inline-block px-4 py-2 rounded-full text-sm font-medium border ${getStatusColor(country.status)}`}
                   >
                     {country.status}
                   </div>
 
-                  <Link href={`/dashboard/${country.id}`}>
-                    <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                  <Link href={`/dashboard/${country.id}`} className="block">
+                    <Button className="w-full h-12 font-semibold group-hover:shadow-lg transition-all">
                       View Dashboard
-                      <ArrowRight className="ml-2 h-4 w-4" />
+                      <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                     </Button>
                   </Link>
                 </CardContent>

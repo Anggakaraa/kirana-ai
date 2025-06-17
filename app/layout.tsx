@@ -8,9 +8,9 @@ import { Chatbot } from "@/components/chatbot"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "EduPilot - Smart Education Policy Assistant",
+  title: "Kirana - Smart Education Policy Assistant",
   description: "AI-powered insights for education policymakers",
-    generator: 'v0.dev'
+  generator: "v0.dev",
 }
 
 export default function RootLayout({

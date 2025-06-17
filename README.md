@@ -1,4 +1,4 @@
-# EduPilot App Design
+# Kirana App Design
 
 *Automatically synced with your [v0.dev](https://v0.dev) deployments*
 
@@ -6,6 +6,8 @@
 [![Built with v0](https://img.shields.io/badge/Built%20with-v0.dev-black?style=for-the-badge)](https://v0.dev/chat/projects/n4Tat0L68qt)
 
 ## Overview
+
+Kirana - Your Education Intelligence Partner. In a world overflowing with data, Kirana emerges as guiding light. It transforms complex educational insights into actionable strategies, and empowers system leaders to take action that result in meaningful student learning outcomes.
 
 This repository will stay in sync with your deployed chats on [v0.dev](https://v0.dev).
 Any changes you make to your deployed app will be automatically pushed to this repository from [v0.dev](https://v0.dev).

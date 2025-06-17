@@ -1,122 +1,135 @@
 "use client"
 
+import type React from "react"
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Progress } from "@/components/ui/progress"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import {
   TrendingUp,
   TrendingDown,
-  AlertTriangle,
-  CheckCircle,
   BookOpen,
-  DollarSign,
-  Target,
-  Lightbulb,
-  ArrowRight,
-  Globe,
+  Users,
+  School,
+  ChevronDown,
+  ChevronUp,
+  Brain,
+  HelpCircle,
 } from "lucide-react"
-import Link from "next/link"
+import { useState } from "react"
 import {
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
+  Tooltip as RechartsTooltip,
   ResponsiveContainer,
   LineChart,
   Line,
-  PieChart,
-  Pie,
+  BarChart,
+  Bar,
   Cell,
 } from "recharts"
+import Link from "next/link"
 
-const countryData = {
-  kenya: {
-    name: "Kenya",
-    flag: "🇰🇪",
-    totalStudents: "17,500,000",
-    totalTeachers: "485,000",
-    totalSchools: "89,500",
-    educationBudget: "17.5%",
-    lastUpdated: "December 2024",
-    overview: {
-      learningRecovery: 42,
-      digitalAccess: 28,
-      teacherQuality: 65,
-      fundingAdequacy: 38,
-      equityIndex: 45,
-      overallScore: 44,
+const pisaData = {
+  indonesia: {
+    name: "Indonesia",
+    flag: "🇮🇩",
+    year: "2022",
+    learningOutcomes: {
+      mathLevel2Plus: 28.5,
+      readingLevel2Plus: 30.1,
+      scienceLevel2Plus: 32.8,
+      meanMathScore: 366,
+      meanReadingScore: 359,
+      meanScienceScore: 383,
+      mathTrend: -8.2,
+      readingTrend: +12.1,
+      scienceTrend: +5.3,
+      genderGapMath: -8,
+      genderGapReading: +25,
+      genderGapScience: -2,
+      lowPerformersMath: 71.5,
+      topPerformersMath: 0.8,
     },
-    keyMetrics: {
-      primaryEnrollment: 98.2,
-      secondaryEnrollment: 70.3,
-      literacyRate: 81.5,
-      pupilTeacherRatio: 28,
-      schoolsWithInternet: 23,
-      genderParityIndex: 1.02,
+    equity: {
+      escsR2: 0.089,
+      resilientStudents: 12.3,
+      escsGap: 78,
+      immigrantGap: -15,
+      betweenSchoolVariance: 45.2,
+      withinSchoolVariance: 54.8,
+      foodInsecurity: 23.4,
+      equityTrend: +2.1,
     },
-    trends: [
-      { year: "2020", literacy: 78, enrollment: 95, digital: 15 },
-      { year: "2021", literacy: 79, enrollment: 92, digital: 18 },
-      { year: "2022", literacy: 80, enrollment: 96, digital: 21 },
-      { year: "2023", literacy: 81, enrollment: 98, digital: 23 },
-      { year: "2024", literacy: 82, enrollment: 98, digital: 28 },
-    ],
-    challenges: [
-      {
-        title: "Digital Infrastructure Gap",
-        severity: "high",
-        impact: "Limits access to modern learning tools and remote education capabilities",
-        affectedStudents: "2.8M students",
-        recommendation: "Implement mobile learning labs and satellite connectivity program",
-      },
-      {
-        title: "Learning Loss Recovery",
-        severity: "high",
-        impact: "Students performing 18 months below grade level post-pandemic",
-        affectedStudents: "3.2M students",
-        recommendation: "Deploy intensive remedial tutoring with community volunteers",
-      },
-      {
-        title: "Teacher Retention Crisis",
-        severity: "medium",
-        impact: "28% annual turnover in rural schools affecting instruction quality",
-        affectedStudents: "1.5M students",
-        recommendation: "Comprehensive teacher incentive package with housing support",
-      },
-    ],
-    quickWins: [
-      {
-        title: "Mother-Tongue Literacy Program",
-        timeframe: "3-6 months",
-        cost: "Low",
-        impact: "High",
-        description: "Leverage local languages for early grade reading instruction",
-      },
-      {
-        title: "Community Reading Mentors",
-        timeframe: "2-4 months",
-        cost: "Low",
-        impact: "Medium",
-        description: "Train volunteers to support struggling readers after school",
-      },
-      {
-        title: "Mobile Library Initiative",
-        timeframe: "4-8 months",
-        cost: "Medium",
-        impact: "Medium",
-        description: "Bring books and learning materials to remote communities",
-      },
-    ],
-    budgetAllocation: [
-      { category: "Teacher Salaries", amount: 45, color: "#3B82F6" },
-      { category: "Infrastructure", amount: 25, color: "#10B981" },
-      { category: "Learning Materials", amount: 15, color: "#F59E0B" },
-      { category: "Technology", amount: 8, color: "#EF4444" },
-      { category: "Other", amount: 7, color: "#8B5CF6" },
-    ],
+    environment: {
+      teacherSupport: 67.8,
+      belongingIndex: 72.1,
+      ictUse: 45.2,
+      digitalDistraction: 38.7,
+      parentalEngagement: 52.3,
+      teacherShortage: 28.9,
+      disciplinaryClimate: 68.4,
+      motivation: 74.2,
+    },
   },
+  singapore: {
+    name: "Singapore",
+    flag: "🇸🇬",
+    year: "2022",
+    learningOutcomes: {
+      mathLevel2Plus: 91.3,
+      readingLevel2Plus: 89.7,
+      scienceLevel2Plus: 92.1,
+      meanMathScore: 575,
+      meanReadingScore: 543,
+      meanScienceScore: 561,
+      mathTrend: -3.1,
+      readingTrend: +1.8,
+      scienceTrend: -2.4,
+      genderGapMath: -12,
+      genderGapReading: +31,
+      genderGapScience: -8,
+      lowPerformersMath: 8.7,
+      topPerformersMath: 41.5,
+    },
+    equity: {
+      escsR2: 0.125,
+      resilientStudents: 25.8,
+      escsGap: 89,
+      immigrantGap: +8,
+      betweenSchoolVariance: 22.1,
+      withinSchoolVariance: 77.9,
+      foodInsecurity: 4.2,
+      equityTrend: -1.2,
+    },
+    environment: {
+      teacherSupport: 78.9,
+      belongingIndex: 81.3,
+      ictUse: 72.8,
+      digitalDistraction: 42.1,
+      parentalEngagement: 68.7,
+      teacherShortage: 12.4,
+      disciplinaryClimate: 82.6,
+      motivation: 79.8,
+    },
+  },
+}
+
+const oecdAverage = {
+  mathLevel2Plus: 69.0,
+  readingLevel2Plus: 73.0,
+  scienceLevel2Plus: 76.0,
+  meanMathScore: 472,
+  meanReadingScore: 476,
+  meanScienceScore: 485,
+  escsR2: 0.15,
+  resilientStudents: 11.2,
+  escsGap: 93,
+  teacherSupport: 71.2,
+  belongingIndex: 75.1,
+  ictUse: 65.0,
+  teacherShortage: 27.0,
 }
 
 interface CountryDashboardProps {
@@ -125,396 +138,726 @@ interface CountryDashboardProps {
   }
 }
 
+// Tooltip definitions
+const tooltips = {
+  escs: "Economic, Social and Cultural Status - a composite measure of family background including parental education, occupation, and home possessions.",
+  resilientStudents:
+    "Students from the bottom quarter of socio-economic status who perform in the top quarter academically.",
+  escsGradient:
+    "The score-point difference associated with a one-unit increase in the ESCS index - higher values indicate greater inequality.",
+  belongingIndex:
+    "Students' sense of belonging at school, measured through agreement with statements about fitting in and making friends.",
+  level2Plus:
+    "Students achieving at least Level 2 proficiency - the baseline level needed for full participation in modern society.",
+  betweenSchoolVariance:
+    "The percentage of performance variation that occurs between schools rather than within schools.",
+}
+
 export default function CountryDashboard({ params }: CountryDashboardProps) {
-  const country = countryData[params.country as keyof typeof countryData]
+  const [selectedCountry, setSelectedCountry] = useState(params.country || "indonesia")
+  const [showOECDComparison, setShowOECDComparison] = useState(true)
+  const [expandedSections, setExpandedSections] = useState<string[]>([])
+
+  const country = pisaData[selectedCountry as keyof typeof pisaData]
 
   if (!country) {
     return <div>Country not found</div>
   }
 
-  const getScoreColor = (score: number) => {
-    if (score >= 70) return "text-green-600"
-    if (score >= 50) return "text-yellow-600"
-    return "text-red-600"
+  const toggleSection = (section: string) => {
+    setExpandedSections((prev) => (prev.includes(section) ? prev.filter((s) => s !== section) : [...prev, section]))
   }
 
-  const getScoreBadge = (score: number) => {
-    if (score >= 70) return "bg-green-100 text-green-800"
-    if (score >= 50) return "bg-yellow-100 text-yellow-800"
-    return "bg-red-100 text-red-800"
-  }
-
-  const getSeverityColor = (severity: string) => {
-    switch (severity) {
-      case "high":
-        return "bg-red-100 text-red-800"
-      case "medium":
-        return "bg-yellow-100 text-yellow-800"
-      case "low":
-        return "bg-green-100 text-green-800"
-      default:
-        return "bg-gray-100 text-gray-800"
+  const getPerformanceColor = (value: number, threshold: number, reverse = false) => {
+    if (reverse) {
+      return value <= threshold ? "text-emerald-600" : "text-red-600"
     }
+    return value >= threshold ? "text-emerald-600" : value >= threshold * 0.7 ? "text-amber-600" : "text-red-600"
   }
+
+  const getComparisonIcon = (value: number, oecdValue: number) => {
+    if (value > oecdValue) return <TrendingUp className="h-4 w-4 text-emerald-600" />
+    if (value < oecdValue) return <TrendingDown className="h-4 w-4 text-red-600" />
+    return <div className="h-4 w-4" />
+  }
+
+  // Trend data for line charts
+  const trendData = [
+    {
+      year: "2012",
+      math: selectedCountry === "indonesia" ? 375 : 573,
+      reading: selectedCountry === "indonesia" ? 396 : 542,
+      science: selectedCountry === "indonesia" ? 382 : 551,
+    },
+    {
+      year: "2015",
+      math: selectedCountry === "indonesia" ? 386 : 564,
+      reading: selectedCountry === "indonesia" ? 397 : 535,
+      science: selectedCountry === "indonesia" ? 403 : 556,
+    },
+    {
+      year: "2018",
+      math: selectedCountry === "indonesia" ? 379 : 569,
+      reading: selectedCountry === "indonesia" ? 371 : 549,
+      science: selectedCountry === "indonesia" ? 396 : 551,
+    },
+    {
+      year: "2022",
+      math: selectedCountry === "indonesia" ? 366 : 575,
+      reading: selectedCountry === "indonesia" ? 359 : 543,
+      science: selectedCountry === "indonesia" ? 383 : 561,
+    },
+  ]
+
+  // Comparison chart component
+  const ComparisonChart = ({
+    countryValue,
+    oecdValue,
+    label,
+    format = "%",
+  }: { countryValue: number; oecdValue: number; label: string; format?: string }) => {
+    const data = [
+      { name: country.name, value: countryValue, color: "#3B82F6" },
+      { name: "OECD Avg", value: oecdValue, color: "#94A3B8" },
+    ]
+
+    return (
+      <div className="mt-4">
+        <ResponsiveContainer width="100%" height={80}>
+          <BarChart data={data} layout="horizontal" margin={{ top: 5, right: 30, left: 5, bottom: 5 }}>
+            <XAxis type="number" domain={[0, Math.max(countryValue, oecdValue) * 1.2]} hide />
+            <YAxis type="category" dataKey="name" width={60} tick={{ fontSize: 12 }} />
+            <Bar dataKey="value" radius={[0, 4, 4, 0]}>
+              {data.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={entry.color} />
+              ))}
+            </Bar>
+            <RechartsTooltip formatter={(value) => [`${value}${format}`, label]} />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    )
+  }
+
+  // Mini trend chart component
+  const TrendChart = ({ data, dataKey, color }: { data: any[]; dataKey: string; color: string }) => (
+    <ResponsiveContainer width="100%" height={60}>
+      <LineChart data={data} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
+        <Line type="monotone" dataKey={dataKey} stroke={color} strokeWidth={2} dot={{ r: 3 }} />
+        <RechartsTooltip formatter={(value) => [`${value}`, dataKey]} />
+      </LineChart>
+    </ResponsiveContainer>
+  )
+
+  // Narrative summary component
+  const NarrativeSummary = ({ children }: { children: React.ReactNode }) => (
+    <div className="mt-4 p-4 bg-blue-50 rounded-lg border-l-4 border-blue-400">
+      <p className="text-sm text-blue-800 leading-relaxed">{children}</p>
+    </div>
+  )
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white">
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-7xl mx-auto">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-4">
-              <span className="text-4xl">{country.flag}</span>
-              <div>
-                <h1 className="text-4xl font-bold text-blue-900">{country.name} Education Dashboard</h1>
-                <div className="grid grid-cols-3 gap-4 text-sm text-blue-700 mt-2">
-                  <div>👩‍🎓 Total Students: {country.totalStudents}</div>
-                  <div>🧑‍🏫 Total Teachers: {country.totalTeachers}</div>
-                  <div>🏫 Total Schools: {country.totalSchools}</div>
+    <TooltipProvider>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50/50 via-white to-indigo-50/30">
+        <div className="container mx-auto px-6 py-12">
+          <div className="max-w-7xl mx-auto">
+            {/* Header */}
+            <div className="mb-12">
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center gap-6">
+                  <span className="text-6xl">{country.flag}</span>
+                  <div>
+                    <h1 className="text-4xl lg:text-5xl font-bold text-foreground mb-2">PISA Country Scorecard</h1>
+                    <p className="text-xl text-muted-foreground">
+                      {country.name} • Programme for International Student Assessment • {country.year}
+                    </p>
+                  </div>
                 </div>
-                <p className="text-sm text-blue-600 mt-1">
-                  Education Budget: {country.educationBudget} of GDP • Last updated: {country.lastUpdated}
-                </p>
+              </div>
+
+              {/* Controls */}
+              <div className="flex flex-wrap gap-4 mb-8">
+                <Select value={selectedCountry} onValueChange={setSelectedCountry}>
+                  <SelectTrigger className="w-64 h-12">
+                    <SelectValue placeholder="Select country" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="indonesia">🇮🇩 Indonesia</SelectItem>
+                    <SelectItem value="singapore">🇸🇬 Singapore</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Button
+                  variant={showOECDComparison ? "default" : "outline"}
+                  onClick={() => setShowOECDComparison(!showOECDComparison)}
+                  className="h-12 px-6 font-medium"
+                >
+                  {showOECDComparison ? "Hide" : "Show"} OECD Comparison
+                </Button>
               </div>
             </div>
-            <div className="text-right">
-              <div className={`text-3xl font-bold ${getScoreColor(country.overview.overallScore)}`}>
-                {country.overview.overallScore}/100
-              </div>
-              <p className="text-sm text-blue-600">Overall Education Index</p>
-            </div>
-          </div>
 
-          {/* Key Performance Indicators */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
-            <Card className="border-blue-200">
-              <CardContent className="p-4 text-center">
-                <div className={`text-2xl font-bold ${getScoreColor(country.overview.learningRecovery)}`}>
-                  {country.overview.learningRecovery}%
+            {/* Section 1: Learning Outcomes */}
+            <Card className="mb-12 border-blue-200 shadow-sm">
+              <CardHeader className="bg-blue-50/50 pb-6">
+                <CardTitle className="flex items-center gap-3 text-blue-900 text-2xl">
+                  <BookOpen className="h-6 w-6" />
+                  Learning Outcomes
+                </CardTitle>
+                <CardDescription className="text-lg">Foundational learning results across core domains</CardDescription>
+              </CardHeader>
+              <CardContent className="p-8">
+                {/* Headline Indicators */}
+                <div className="grid md:grid-cols-3 gap-8 mb-8">
+                  <Card className="border-blue-200">
+                    <CardContent className="p-6">
+                      <div className="flex items-center gap-2 mb-4">
+                        <h4 className="font-semibold text-foreground">Math Level 2+</h4>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="max-w-xs">{tooltips.level2Plus}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </div>
+                      <div
+                        className={`text-4xl font-bold mb-2 ${getPerformanceColor(country.learningOutcomes.mathLevel2Plus, 70)}`}
+                      >
+                        {country.learningOutcomes.mathLevel2Plus}%
+                      </div>
+
+                      {/* Trend Chart */}
+                      <div className="mb-4">
+                        <p className="text-xs text-muted-foreground mb-2">Trend (2012-2022)</p>
+                        <TrendChart data={trendData} dataKey="math" color="#3B82F6" />
+                      </div>
+
+                      {/* Comparison Chart */}
+                      {showOECDComparison && (
+                        <ComparisonChart
+                          countryValue={country.learningOutcomes.mathLevel2Plus}
+                          oecdValue={oecdAverage.mathLevel2Plus}
+                          label="Math Level 2+"
+                        />
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  <Card className="border-blue-200">
+                    <CardContent className="p-6">
+                      <div className="flex items-center gap-2 mb-4">
+                        <h4 className="font-semibold text-foreground">Reading Level 2+</h4>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="max-w-xs">{tooltips.level2Plus}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </div>
+                      <div
+                        className={`text-4xl font-bold mb-2 ${getPerformanceColor(country.learningOutcomes.readingLevel2Plus, 70)}`}
+                      >
+                        {country.learningOutcomes.readingLevel2Plus}%
+                      </div>
+
+                      {/* Trend Chart */}
+                      <div className="mb-4">
+                        <p className="text-xs text-muted-foreground mb-2">Trend (2012-2022)</p>
+                        <TrendChart data={trendData} dataKey="reading" color="#10B981" />
+                      </div>
+
+                      {/* Comparison Chart */}
+                      {showOECDComparison && (
+                        <ComparisonChart
+                          countryValue={country.learningOutcomes.readingLevel2Plus}
+                          oecdValue={oecdAverage.readingLevel2Plus}
+                          label="Reading Level 2+"
+                        />
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  <Card className="border-blue-200">
+                    <CardContent className="p-6">
+                      <div className="flex items-center gap-2 mb-4">
+                        <h4 className="font-semibold text-foreground">Science Level 2+</h4>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="max-w-xs">{tooltips.level2Plus}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </div>
+                      <div
+                        className={`text-4xl font-bold mb-2 ${getPerformanceColor(country.learningOutcomes.scienceLevel2Plus, 70)}`}
+                      >
+                        {country.learningOutcomes.scienceLevel2Plus}%
+                      </div>
+
+                      {/* Trend Chart */}
+                      <div className="mb-4">
+                        <p className="text-xs text-muted-foreground mb-2">Trend (2012-2022)</p>
+                        <TrendChart data={trendData} dataKey="science" color="#F59E0B" />
+                      </div>
+
+                      {/* Comparison Chart */}
+                      {showOECDComparison && (
+                        <ComparisonChart
+                          countryValue={country.learningOutcomes.scienceLevel2Plus}
+                          oecdValue={oecdAverage.scienceLevel2Plus}
+                          label="Science Level 2+"
+                        />
+                      )}
+                    </CardContent>
+                  </Card>
                 </div>
-                <p className="text-xs text-blue-600">Learning Recovery</p>
-                <Progress value={country.overview.learningRecovery} className="mt-2 h-2" />
-              </CardContent>
-            </Card>
 
-            <Card className="border-blue-200">
-              <CardContent className="p-4 text-center">
-                <div className={`text-2xl font-bold ${getScoreColor(country.overview.digitalAccess)}`}>
-                  {country.overview.digitalAccess}%
-                </div>
-                <p className="text-xs text-blue-600">Digital Access</p>
-                <Progress value={country.overview.digitalAccess} className="mt-2 h-2" />
-              </CardContent>
-            </Card>
+                {/* Narrative Summary */}
+                <NarrativeSummary>
+                  {selectedCountry === "indonesia"
+                    ? "Indonesia shows significant learning challenges with less than one-third of students reaching foundational proficiency levels. However, positive trends in reading suggest targeted interventions may be working."
+                    : "Singapore demonstrates exceptional learning outcomes with over 90% of students achieving foundational proficiency across all domains, though slight declines in recent cycles warrant attention."}
+                </NarrativeSummary>
 
-            <Card className="border-blue-200">
-              <CardContent className="p-4 text-center">
-                <div className={`text-2xl font-bold ${getScoreColor(country.overview.teacherQuality)}`}>
-                  {country.overview.teacherQuality}%
-                </div>
-                <p className="text-xs text-blue-600">Teacher Quality</p>
-                <Progress value={country.overview.teacherQuality} className="mt-2 h-2" />
-              </CardContent>
-            </Card>
+                {/* Detailed Indicators Toggle */}
+                <div className="mt-8">
+                  <Button
+                    variant="outline"
+                    onClick={() => toggleSection("learning")}
+                    className="w-full flex items-center justify-center gap-2 h-12 text-blue-700 border-blue-200 hover:bg-blue-50"
+                  >
+                    {expandedSections.includes("learning") ? (
+                      <>
+                        <ChevronUp className="h-4 w-4" />
+                        Hide Detailed Indicators
+                      </>
+                    ) : (
+                      <>
+                        <ChevronDown className="h-4 w-4" />
+                        Show Detailed Indicators
+                      </>
+                    )}
+                  </Button>
 
-            <Card className="border-blue-200">
-              <CardContent className="p-4 text-center">
-                <div className={`text-2xl font-bold ${getScoreColor(country.overview.fundingAdequacy)}`}>
-                  {country.overview.fundingAdequacy}%
-                </div>
-                <p className="text-xs text-blue-600">Funding Adequacy</p>
-                <Progress value={country.overview.fundingAdequacy} className="mt-2 h-2" />
-              </CardContent>
-            </Card>
+                  {/* Detailed Indicators Content */}
+                  {expandedSections.includes("learning") && (
+                    <div className="mt-8 space-y-8 border-t border-border pt-8">
+                      <div className="grid md:grid-cols-4 gap-6">
+                        <Card className="border-gray-200">
+                          <CardContent className="p-6 text-center">
+                            <div
+                              className={`text-3xl font-bold mb-2 ${getPerformanceColor(country.learningOutcomes.meanMathScore, 500)}`}
+                            >
+                              {country.learningOutcomes.meanMathScore}
+                            </div>
+                            <p className="text-sm text-muted-foreground mb-4">Mean Math Score</p>
+                            {showOECDComparison && (
+                              <ComparisonChart
+                                countryValue={country.learningOutcomes.meanMathScore}
+                                oecdValue={oecdAverage.meanMathScore}
+                                label="Mean Math Score"
+                                format=""
+                              />
+                            )}
+                          </CardContent>
+                        </Card>
 
-            <Card className="border-blue-200">
-              <CardContent className="p-4 text-center">
-                <div className={`text-2xl font-bold ${getScoreColor(country.overview.equityIndex)}`}>
-                  {country.overview.equityIndex}%
-                </div>
-                <p className="text-xs text-blue-600">Equity Index</p>
-                <Progress value={country.overview.equityIndex} className="mt-2 h-2" />
-              </CardContent>
-            </Card>
+                        <Card className="border-gray-200">
+                          <CardContent className="p-6 text-center">
+                            <div className="text-3xl font-bold text-red-600 mb-2">
+                              {country.learningOutcomes.lowPerformersMath}%
+                            </div>
+                            <p className="text-sm text-muted-foreground">Low Performers (Math)</p>
+                          </CardContent>
+                        </Card>
 
-            <Card className="border-blue-200">
-              <CardContent className="p-4 text-center">
-                <div className="text-2xl font-bold text-blue-600">{country.keyMetrics.genderParityIndex}</div>
-                <p className="text-xs text-blue-600">Gender Parity</p>
-                <div className="mt-2 flex justify-center">
-                  {country.keyMetrics.genderParityIndex >= 0.97 && country.keyMetrics.genderParityIndex <= 1.03 ? (
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                  ) : (
-                    <AlertTriangle className="h-4 w-4 text-yellow-500" />
+                        <Card className="border-gray-200">
+                          <CardContent className="p-6 text-center">
+                            <div className="text-3xl font-bold text-emerald-600 mb-2">
+                              {country.learningOutcomes.topPerformersMath}%
+                            </div>
+                            <p className="text-sm text-muted-foreground">Top Performers (Math)</p>
+                          </CardContent>
+                        </Card>
+
+                        <Card className="border-gray-200">
+                          <CardContent className="p-6 text-center">
+                            <div className="text-3xl font-bold text-blue-600 mb-2">
+                              {Math.abs(country.learningOutcomes.genderGapMath)}
+                            </div>
+                            <p className="text-sm text-muted-foreground">Gender Gap (Math)</p>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    </div>
                   )}
                 </div>
               </CardContent>
             </Card>
-          </div>
 
-          <Card className="mb-8 border-blue-200 bg-blue-50">
-            <CardContent className="p-6">
-              <h3 className="text-lg font-semibold text-blue-900 mb-4">Want to Add More Local Data?</h3>
-              <p className="text-blue-700 mb-4">You can:</p>
-              <ul className="text-blue-700 space-y-2 mb-6">
-                <li className="flex items-center gap-2">
-                  <span>📤</span>
-                  <span>Upload additional data (e.g., CSV of national assessments, teacher deployment, budgets)</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <span>📬</span>
-                  <span>Or contact the EduPilot team for tailored onboarding</span>
-                </li>
-              </ul>
-              <div className="flex gap-4">
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white">📤 Upload Data</Button>
-                <Button variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-50">
-                  📬 Contact Us
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Tabs defaultValue="overview" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="challenges">Challenges</TabsTrigger>
-              <TabsTrigger value="recommendations">Quick Wins</TabsTrigger>
-              <TabsTrigger value="trends">Trends</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="overview" className="space-y-6">
-              <div className="grid lg:grid-cols-2 gap-6">
-                {/* Key Metrics */}
-                <Card className="border-blue-200">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-blue-900">
-                      <BookOpen className="h-5 w-5" />
-                      Education Metrics
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <p className="text-sm text-blue-600">Primary Enrollment</p>
-                        <p className="text-2xl font-bold text-blue-900">{country.keyMetrics.primaryEnrollment}%</p>
+            {/* Section 2: Equity & Inclusion */}
+            <Card className="mb-12 border-red-200 shadow-sm">
+              <CardHeader className="bg-red-50/50 pb-6">
+                <CardTitle className="flex items-center gap-3 text-red-900 text-2xl">
+                  <Users className="h-6 w-6" />
+                  Equity & Inclusion
+                </CardTitle>
+                <CardDescription className="text-lg">
+                  How fairly learning outcomes are distributed across social groups
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-8">
+                {/* Headline Indicators */}
+                <div className="grid md:grid-cols-2 gap-8 mb-8">
+                  <Card className="border-red-200">
+                    <CardContent className="p-6">
+                      <div className="flex items-center gap-2 mb-4">
+                        <h4 className="font-semibold text-foreground">ESCS Impact on Performance</h4>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="max-w-xs">{tooltips.escs}</p>
+                          </TooltipContent>
+                        </Tooltip>
                       </div>
-                      <div>
-                        <p className="text-sm text-blue-600">Secondary Enrollment</p>
-                        <p className="text-2xl font-bold text-blue-900">{country.keyMetrics.secondaryEnrollment}%</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-blue-600">Literacy Rate</p>
-                        <p className="text-2xl font-bold text-blue-900">{country.keyMetrics.literacyRate}%</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-blue-600">Pupil-Teacher Ratio</p>
-                        <p className="text-2xl font-bold text-blue-900">{country.keyMetrics.pupilTeacherRatio}:1</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Budget Allocation */}
-                <Card className="border-blue-200">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-blue-900">
-                      <DollarSign className="h-5 w-5" />
-                      Budget Allocation
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <ResponsiveContainer width="100%" height={200}>
-                      <PieChart>
-                        <Pie
-                          data={country.budgetAllocation}
-                          cx="50%"
-                          cy="50%"
-                          outerRadius={80}
-                          dataKey="amount"
-                          label={({ category, amount }) => `${category}: ${amount}%`}
-                        >
-                          {country.budgetAllocation.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={entry.color} />
-                          ))}
-                        </Pie>
-                        <Tooltip />
-                      </PieChart>
-                    </ResponsiveContainer>
-                  </CardContent>
-                </Card>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="challenges" className="space-y-6">
-              <div className="space-y-4">
-                {country.challenges.map((challenge, index) => (
-                  <Card key={index} className="border-red-200">
-                    <CardHeader>
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-center gap-2">
-                          <AlertTriangle className="h-5 w-5 text-red-600" />
-                          <CardTitle className="text-red-900">{challenge.title}</CardTitle>
-                          <Badge className={getSeverityColor(challenge.severity)}>
-                            {challenge.severity.toUpperCase()}
-                          </Badge>
-                        </div>
-                        <Badge variant="outline" className="text-blue-600">
-                          {challenge.affectedStudents}
-                        </Badge>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-gray-700 mb-4">{challenge.impact}</p>
-                      <div className="bg-blue-50 p-3 rounded-lg border-l-4 border-blue-400">
-                        <p className="text-sm font-medium text-blue-900">Recommended Action:</p>
-                        <p className="text-sm text-blue-700">{challenge.recommendation}</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-
-              <div className="text-center">
-                <Link href="/recommendations">
-                  <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white">
-                    <Target className="mr-2 h-5 w-5" />
-                    Get Detailed Policy Recommendations
-                  </Button>
-                </Link>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="recommendations" className="space-y-6">
-              <div className="grid md:grid-cols-3 gap-6">
-                {country.quickWins.map((win, index) => (
-                  <Card key={index} className="border-green-200">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2 text-green-900">
-                        <Lightbulb className="h-5 w-5" />
-                        {win.title}
-                      </CardTitle>
-                      <div className="flex gap-2">
-                        <Badge variant="outline" className="text-xs">
-                          {win.timeframe}
-                        </Badge>
-                        <Badge variant="outline" className="text-xs">
-                          {win.cost} Cost
-                        </Badge>
-                        <Badge
-                          className={`text-xs ${win.impact === "High" ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800"}`}
-                        >
-                          {win.impact} Impact
-                        </Badge>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-gray-700 mb-4">{win.description}</p>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="w-full border-green-600 text-green-600 hover:bg-green-50"
+                      <div
+                        className={`text-4xl font-bold mb-2 ${getPerformanceColor(country.equity.escsR2, 0.2, true)}`}
                       >
-                        View Implementation Plan
-                        <ArrowRight className="ml-2 h-4 w-4" />
-                      </Button>
+                        {(country.equity.escsR2 * 100).toFixed(1)}%
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-4">Lower is better</p>
+
+                      {/* Comparison Chart */}
+                      {showOECDComparison && (
+                        <ComparisonChart
+                          countryValue={country.equity.escsR2 * 100}
+                          oecdValue={oecdAverage.escsR2 * 100}
+                          label="ESCS Impact"
+                        />
+                      )}
                     </CardContent>
                   </Card>
-                ))}
-              </div>
 
-              <Card className="border-blue-200 bg-blue-50">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-lg font-semibold text-blue-900 mb-2">Need More Comprehensive Analysis?</h3>
-                      <p className="text-blue-700">
-                        Get personalized policy recommendations based on your specific context and priorities.
-                      </p>
+                  <Card className="border-red-200">
+                    <CardContent className="p-6">
+                      <div className="flex items-center gap-2 mb-4">
+                        <h4 className="font-semibold text-foreground">Resilient Students</h4>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="max-w-xs">{tooltips.resilientStudents}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </div>
+                      <div
+                        className={`text-4xl font-bold mb-2 ${getPerformanceColor(country.equity.resilientStudents, 15)}`}
+                      >
+                        {country.equity.resilientStudents}%
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-4">Low-SES, high-performing</p>
+
+                      {/* Comparison Chart */}
+                      {showOECDComparison && (
+                        <ComparisonChart
+                          countryValue={country.equity.resilientStudents}
+                          oecdValue={oecdAverage.resilientStudents}
+                          label="Resilient Students"
+                        />
+                      )}
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* Narrative Summary */}
+                <NarrativeSummary>
+                  {selectedCountry === "indonesia"
+                    ? "Indonesia shows relatively low socio-economic impact on performance, suggesting the education system provides fairly equal opportunities regardless of family background."
+                    : "Singapore faces equity challenges with higher socio-economic impact on performance, though it has a strong proportion of resilient students who overcome disadvantage."}
+                </NarrativeSummary>
+
+                {/* Detailed Indicators Toggle */}
+                <div className="mt-8">
+                  <Button
+                    variant="outline"
+                    onClick={() => toggleSection("equity")}
+                    className="w-full flex items-center justify-center gap-2 h-12 text-red-700 border-red-200 hover:bg-red-50"
+                  >
+                    {expandedSections.includes("equity") ? (
+                      <>
+                        <ChevronUp className="h-4 w-4" />
+                        Hide Detailed Indicators
+                      </>
+                    ) : (
+                      <>
+                        <ChevronDown className="h-4 w-4" />
+                        Show Detailed Indicators
+                      </>
+                    )}
+                  </Button>
+
+                  {/* Detailed Indicators Content */}
+                  {expandedSections.includes("equity") && (
+                    <div className="mt-8 space-y-6 border-t border-border pt-8">
+                      <div className="grid md:grid-cols-4 gap-6">
+                        <Card className="border-gray-200">
+                          <CardContent className="p-6 text-center">
+                            <div className="text-3xl font-bold text-red-600 mb-2">{country.equity.escsGap}</div>
+                            <p className="text-sm text-muted-foreground">ESCS Quartile Gap</p>
+                          </CardContent>
+                        </Card>
+
+                        <Card className="border-gray-200">
+                          <CardContent className="p-6 text-center">
+                            <div className="text-3xl font-bold text-blue-600 mb-2">
+                              {Math.abs(country.equity.immigrantGap)}
+                            </div>
+                            <p className="text-sm text-muted-foreground">Immigrant Gap</p>
+                          </CardContent>
+                        </Card>
+
+                        <Card className="border-gray-200">
+                          <CardContent className="p-6 text-center">
+                            <div className="flex items-center gap-2 mb-4 justify-center">
+                              <span className="text-3xl font-bold text-orange-600">
+                                {country.equity.betweenSchoolVariance}%
+                              </span>
+                              <Tooltip>
+                                <TooltipTrigger>
+                                  <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p className="max-w-xs">{tooltips.betweenSchoolVariance}</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </div>
+                            <p className="text-sm text-muted-foreground">Between-School Variance</p>
+                          </CardContent>
+                        </Card>
+
+                        <Card className="border-gray-200">
+                          <CardContent className="p-6 text-center">
+                            <div className="text-3xl font-bold text-red-600 mb-2">{country.equity.foodInsecurity}%</div>
+                            <p className="text-sm text-muted-foreground">Food Insecurity</p>
+                          </CardContent>
+                        </Card>
+                      </div>
                     </div>
-                    <div className="flex gap-2">
-                      <Link href="/recommendations">
-                        <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-                          <Globe className="mr-2 h-4 w-4" />
-                          Explore Global Best Practices
-                        </Button>
-                      </Link>
-                      <Link href="/scenario-planner">
-                        <Button variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-50">
-                          Model Scenarios
-                        </Button>
-                      </Link>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Section 3: Learning Environment */}
+            <Card className="mb-12 border-emerald-200 shadow-sm">
+              <CardHeader className="bg-emerald-50/50 pb-6">
+                <CardTitle className="flex items-center gap-3 text-emerald-900 text-2xl">
+                  <School className="h-6 w-6" />
+                  Learning Environment
+                </CardTitle>
+                <CardDescription className="text-lg">
+                  Supportive conditions and learning climate in schools
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-8">
+                {/* Headline Indicators */}
+                <div className="grid md:grid-cols-2 gap-8 mb-8">
+                  <Card className="border-emerald-200">
+                    <CardContent className="p-6">
+                      <div className="flex items-center gap-2 mb-4">
+                        <h4 className="font-semibold text-foreground">Teacher Support Access</h4>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="max-w-xs">
+                              Percentage of students who report their teachers provide help and support when needed.
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </div>
+                      <div
+                        className={`text-4xl font-bold mb-4 ${getPerformanceColor(country.environment.teacherSupport, 70)}`}
+                      >
+                        {country.environment.teacherSupport}%
+                      </div>
+
+                      {/* Comparison Chart */}
+                      {showOECDComparison && (
+                        <ComparisonChart
+                          countryValue={country.environment.teacherSupport}
+                          oecdValue={oecdAverage.teacherSupport}
+                          label="Teacher Support"
+                        />
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  <Card className="border-emerald-200">
+                    <CardContent className="p-6">
+                      <div className="flex items-center gap-2 mb-4">
+                        <h4 className="font-semibold text-foreground">Sense of Belonging</h4>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="max-w-xs">{tooltips.belongingIndex}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </div>
+                      <div
+                        className={`text-4xl font-bold mb-4 ${getPerformanceColor(country.environment.belongingIndex, 70)}`}
+                      >
+                        {country.environment.belongingIndex}%
+                      </div>
+
+                      {/* Comparison Chart */}
+                      {showOECDComparison && (
+                        <ComparisonChart
+                          countryValue={country.environment.belongingIndex}
+                          oecdValue={oecdAverage.belongingIndex}
+                          label="Sense of Belonging"
+                        />
+                      )}
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* Narrative Summary */}
+                <NarrativeSummary>
+                  {selectedCountry === "indonesia"
+                    ? "Indonesia shows moderate learning environment conditions with room for improvement in teacher support and student belonging, though digital integration remains limited."
+                    : "Singapore provides a strong learning environment with high teacher support and student belonging, creating optimal conditions for learning across the system."}
+                </NarrativeSummary>
+
+                {/* Detailed Indicators Toggle */}
+                <div className="mt-8">
+                  <Button
+                    variant="outline"
+                    onClick={() => toggleSection("environment")}
+                    className="w-full flex items-center justify-center gap-2 h-12 text-emerald-700 border-emerald-200 hover:bg-emerald-50"
+                  >
+                    {expandedSections.includes("environment") ? (
+                      <>
+                        <ChevronUp className="h-4 w-4" />
+                        Hide Detailed Indicators
+                      </>
+                    ) : (
+                      <>
+                        <ChevronDown className="h-4 w-4" />
+                        Show Detailed Indicators
+                      </>
+                    )}
+                  </Button>
+
+                  {/* Detailed Indicators Content */}
+                  {expandedSections.includes("environment") && (
+                    <div className="mt-8 space-y-6 border-t border-border pt-8">
+                      <div className="grid md:grid-cols-3 gap-6">
+                        <Card className="border-gray-200">
+                          <CardContent className="p-6 text-center">
+                            <div className="text-3xl font-bold text-blue-600 mb-2">{country.environment.ictUse}%</div>
+                            <p className="text-sm text-muted-foreground">ICT Use in Learning</p>
+                            {showOECDComparison && (
+                              <div className="mt-4">
+                                <ComparisonChart
+                                  countryValue={country.environment.ictUse}
+                                  oecdValue={oecdAverage.ictUse}
+                                  label="ICT Use"
+                                />
+                              </div>
+                            )}
+                          </CardContent>
+                        </Card>
+
+                        <Card className="border-gray-200">
+                          <CardContent className="p-6 text-center">
+                            <div className="text-3xl font-bold text-red-600 mb-2">
+                              {country.environment.digitalDistraction}%
+                            </div>
+                            <p className="text-sm text-muted-foreground">Digital Distraction</p>
+                          </CardContent>
+                        </Card>
+
+                        <Card className="border-gray-200">
+                          <CardContent className="p-6 text-center">
+                            <div className="text-3xl font-bold text-emerald-600 mb-2">
+                              {country.environment.parentalEngagement}%
+                            </div>
+                            <p className="text-sm text-muted-foreground">Parental Engagement</p>
+                          </CardContent>
+                        </Card>
+                      </div>
+
+                      <div className="grid md:grid-cols-3 gap-6">
+                        <Card className="border-gray-200">
+                          <CardContent className="p-6 text-center">
+                            <div className="text-3xl font-bold text-red-600 mb-2">
+                              {country.environment.teacherShortage}%
+                            </div>
+                            <p className="text-sm text-muted-foreground">Teacher Shortage</p>
+                            {showOECDComparison && (
+                              <div className="mt-4">
+                                <ComparisonChart
+                                  countryValue={country.environment.teacherShortage}
+                                  oecdValue={oecdAverage.teacherShortage}
+                                  label="Teacher Shortage"
+                                />
+                              </div>
+                            )}
+                          </CardContent>
+                        </Card>
+
+                        <Card className="border-gray-200">
+                          <CardContent className="p-6 text-center">
+                            <div className="text-3xl font-bold text-emerald-600 mb-2">
+                              {country.environment.disciplinaryClimate}%
+                            </div>
+                            <p className="text-sm text-muted-foreground">Disciplinary Climate</p>
+                          </CardContent>
+                        </Card>
+
+                        <Card className="border-gray-200">
+                          <CardContent className="p-6 text-center">
+                            <div className="text-3xl font-bold text-blue-600 mb-2">
+                              {country.environment.motivation}%
+                            </div>
+                            <p className="text-sm text-muted-foreground">Student Motivation</p>
+                          </CardContent>
+                        </Card>
+                      </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
 
-            <TabsContent value="trends" className="space-y-6">
-              <Card className="border-blue-200">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-blue-900">
-                    <TrendingUp className="h-5 w-5" />
-                    5-Year Education Trends
-                  </CardTitle>
-                  <CardDescription>Key performance indicators over time</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <LineChart data={country.trends}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="year" />
-                      <YAxis />
-                      <Tooltip />
-                      <Line
-                        type="monotone"
-                        dataKey="literacy"
-                        stroke="#3B82F6"
-                        strokeWidth={2}
-                        name="Literacy Rate %"
-                      />
-                      <Line type="monotone" dataKey="enrollment" stroke="#10B981" strokeWidth={2} name="Enrollment %" />
-                      <Line
-                        type="monotone"
-                        dataKey="digital"
-                        stroke="#F59E0B"
-                        strokeWidth={2}
-                        name="Digital Access %"
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-
-              <div className="grid md:grid-cols-3 gap-4">
-                <Card className="border-green-200">
-                  <CardContent className="p-4 text-center">
-                    <TrendingUp className="h-8 w-8 text-green-600 mx-auto mb-2" />
-                    <div className="text-2xl font-bold text-green-600">+4%</div>
-                    <p className="text-sm text-green-700">Literacy improvement since 2020</p>
-                  </CardContent>
-                </Card>
-
-                <Card className="border-blue-200">
-                  <CardContent className="p-4 text-center">
-                    <TrendingUp className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-                    <div className="text-2xl font-bold text-blue-600">+13%</div>
-                    <p className="text-sm text-blue-700">Digital access growth since 2020</p>
-                  </CardContent>
-                </Card>
-
-                <Card className="border-yellow-200">
-                  <CardContent className="p-4 text-center">
-                    <TrendingDown className="h-8 w-8 text-yellow-600 mx-auto mb-2" />
-                    <div className="text-2xl font-bold text-yellow-600">-2%</div>
-                    <p className="text-sm text-yellow-700">Enrollment dip during pandemic</p>
-                  </CardContent>
-                </Card>
-              </div>
-            </TabsContent>
-          </Tabs>
+            {/* Diagnostics CTA Button */}
+            <div className="text-center">
+              <Link href="/diagnostics">
+                <Button
+                  size="lg"
+                  className="h-16 px-12 text-xl font-semibold shadow-xl hover:shadow-2xl transition-all"
+                >
+                  <Brain className="mr-4 h-8 w-8" />
+                  Run Diagnostics & Recommendations
+                </Button>
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </TooltipProvider>
   )
 }

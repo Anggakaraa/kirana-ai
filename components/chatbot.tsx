@@ -63,44 +63,46 @@ export function Chatbot() {
     return (
       <Button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 h-14 w-14 rounded-full bg-blue-600 hover:bg-blue-700 shadow-lg z-50"
+        className="fixed bottom-8 right-8 h-16 w-16 rounded-full bg-primary hover:bg-primary/90 shadow-xl hover:shadow-2xl z-50 transition-all duration-300"
         size="icon"
       >
-        <MessageCircle className="h-6 w-6 text-white" />
+        <MessageCircle className="h-7 w-7 text-primary-foreground" />
       </Button>
     )
   }
 
   return (
-    <Card className="fixed bottom-6 right-6 w-80 h-96 shadow-xl z-50 border-blue-200">
-      <CardHeader className="bg-blue-600 text-white rounded-t-lg">
+    <Card className="fixed bottom-8 right-8 w-96 h-[500px] shadow-2xl z-50 border-border/50">
+      <CardHeader className="bg-primary text-primary-foreground rounded-t-xl p-6">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-sm flex items-center gap-2">
-            <Bot className="h-4 w-4" />
+          <CardTitle className="text-lg flex items-center gap-3">
+            <Bot className="h-5 w-5" />
             Ask the Consultant
           </CardTitle>
           <Button
             variant="ghost"
             size="icon"
             onClick={() => setIsOpen(false)}
-            className="h-6 w-6 text-white hover:bg-blue-700"
+            className="h-8 w-8 text-primary-foreground hover:bg-primary-foreground/20"
           >
             <X className="h-4 w-4" />
           </Button>
         </div>
       </CardHeader>
-      <CardContent className="p-0 flex flex-col h-80">
-        <ScrollArea className="flex-1 p-4">
-          <div className="space-y-4">
+      <CardContent className="p-0 flex flex-col h-[420px]">
+        <ScrollArea className="flex-1 p-6">
+          <div className="space-y-6">
             {messages.map((message) => (
               <div key={message.id} className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}>
                 <div
-                  className={`max-w-[80%] rounded-lg p-3 text-sm ${
-                    message.sender === "user" ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-900"
+                  className={`max-w-[85%] rounded-2xl p-4 text-sm leading-relaxed ${
+                    message.sender === "user"
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-accent text-foreground border border-border/50"
                   }`}
                 >
-                  <div className="flex items-start gap-2">
-                    {message.sender === "bot" && <Bot className="h-4 w-4 mt-0.5 flex-shrink-0" />}
+                  <div className="flex items-start gap-3">
+                    {message.sender === "bot" && <Bot className="h-4 w-4 mt-0.5 flex-shrink-0 text-primary" />}
                     {message.sender === "user" && <User className="h-4 w-4 mt-0.5 flex-shrink-0" />}
                     <span>{message.content}</span>
                   </div>
@@ -109,16 +111,16 @@ export function Chatbot() {
             ))}
           </div>
         </ScrollArea>
-        <div className="p-4 border-t">
-          <div className="flex gap-2">
+        <div className="p-6 border-t border-border/50">
+          <div className="flex gap-3">
             <Input
               placeholder="Ask about education policy..."
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
-              className="flex-1 text-sm"
+              className="flex-1 h-12"
             />
-            <Button onClick={handleSendMessage} size="icon" className="bg-blue-600 hover:bg-blue-700">
+            <Button onClick={handleSendMessage} size="icon" className="h-12 w-12 shadow-sm">
               <Send className="h-4 w-4" />
             </Button>
           </div>
